@@ -14,13 +14,6 @@ import android.os.Bundle;
 import com.example.myapplication.R;
 import com.example.myapplication.view.main.MainViewModel;
 import com.github.mhendred.face4j.model.Photo;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import com.microsoft.projectoxford.face.FaceServiceClient;
-import com.microsoft.projectoxford.face.FaceServiceRestClient;
-import com.microsoft.projectoxford.face.contract.Face;
-import com.microsoft.projectoxford.face.contract.FaceRectangle;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -137,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
                 .create().show();
     }
 
-    private static Bitmap drawFaceRectanglesOnBitmap(
+   /* private static Bitmap drawFaceRectanglesOnBitmap(
             Bitmap originalBitmap, Face[] faces) {
         Bitmap bitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true);
         Canvas canvas = new Canvas(bitmap);
@@ -158,5 +151,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return bitmap;
-    }
+    }*/
 }

@@ -11,6 +11,8 @@ import java.util.concurrent.Callable;
 
 import io.reactivex.Single;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Model {
 
@@ -23,6 +25,8 @@ public class Model {
     public Model() {
         Retrofit retrofit = new Retrofit.Builder()
                                     .baseUrl("http://api.skybiometry.com/")
+                                    .addConverterFactory(GsonConverterFactory.create())
+                                    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                                     .build();
 
         remoteDataSource = retrofit.create(RemoteDataSource.class);
