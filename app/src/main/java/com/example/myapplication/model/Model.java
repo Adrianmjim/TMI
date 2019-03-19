@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.concurrent.Callable;
 
 import io.reactivex.Single;
+import retrofit2.Retrofit;
 
 public class Model {
 
@@ -17,13 +18,17 @@ public class Model {
 
     private final String API_SEC = "1fknfh9cuv4g3dnt8dl940lrib";
 
-    private FaceClient client;
+    private RemoteDataSource remoteDataSource;
 
     public Model() {
-        client = new DefaultFaceClient(API_KEY, API_SEC);
+        Retrofit retrofit = new Retrofit.Builder()
+                                    .baseUrl("http://api.skybiometry.com/")
+                                    .build();
+
+        remoteDataSource = retrofit.create(RemoteDataSource.class);
     }
 
     public Single<Photo> detect (File imageFile) {
-        return Single.fromCallable(() -> client.detect(imageFile));
+        return remoteDataSource.getPhotoInfo(API_KEY, API_SEC, imageFile);
     }
 }
