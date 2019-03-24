@@ -43,6 +43,7 @@ public class Model {
     }
 
     public Single<Report> detect (File imageFile) {
-        return remoteDataSource.getPhotoInfo(API_KEY, API_SEC, MultipartBody.Part.createFormData("urls", imageFile.toString()));
+        RequestBody fileBody = RequestBody.create(MediaType.parse("image/jpeg"),imageFile);
+        return remoteDataSource.getPhotoInfo(API_KEY, API_SEC, fileBody);
     }
 }

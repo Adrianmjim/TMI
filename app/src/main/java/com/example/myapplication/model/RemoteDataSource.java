@@ -18,6 +18,6 @@ public interface RemoteDataSource {
 
     @Multipart
     @POST("fc/faces/detect.json?attributes=all")
-    Single<Report> getPhotoInfo(@Query("api_key") String apiKey, @Query("api_secret") String apiSecret, @Part MultipartBody.Part photo);
+    Single<Report> getPhotoInfo(@Query("api_key") String apiKey, @Query("api_secret") String apiSecret, @Part("file\";filename=\"avatar.jpg\" ") RequestBody file);
 
 }
