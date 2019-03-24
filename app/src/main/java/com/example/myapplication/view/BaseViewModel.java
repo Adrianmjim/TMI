@@ -19,6 +19,7 @@ public class BaseViewModel extends ViewModel {
     public LiveData<Throwable> getError() {
         return error;
     }
+
     public BaseViewModel() {
         model = new Model();
         disposables = new CompositeDisposable();

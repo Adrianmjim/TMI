@@ -1,7 +1,7 @@
 package com.example.myapplication.view.main;
 
+import com.example.myapplication.model.entities.Report;
 import com.example.myapplication.view.BaseViewModel;
-import com.github.mhendred.face4j.model.Photo;
 
 import java.io.File;
 
@@ -12,9 +12,9 @@ import io.reactivex.schedulers.Schedulers;
 
 public class MainViewModel extends BaseViewModel {
 
-    private MutableLiveData<Photo> photoLiveData = new MutableLiveData<>();
+    private MutableLiveData<Report> photoLiveData = new MutableLiveData<>();
 
-    public LiveData<Photo> getPhoto() {
+    public LiveData<Report> getPhoto() {
         return photoLiveData;
     }
 

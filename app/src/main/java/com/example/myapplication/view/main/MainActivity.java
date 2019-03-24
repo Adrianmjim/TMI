@@ -1,4 +1,4 @@
-package com.example.myapplication.view;
+package com.example.myapplication.view.main;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import com.example.myapplication.R;
+import com.example.myapplication.model.entities.Report;
 import com.example.myapplication.view.main.MainViewModel;
 import com.github.mhendred.face4j.model.Photo;
 import androidx.appcompat.app.AlertDialog;
@@ -65,14 +66,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Button button1 = findViewById(R.id.button1);
-        button1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("image/*");
-                startActivityForResult(Intent.createChooser(
-                        intent, "Select Picture"), PICK_IMAGE);
-            }
+        button1.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("image/*");
+            startActivityForResult(Intent.createChooser(
+                    intent, "Select Picture"), PICK_IMAGE);
         });
         viewModel = new MainViewModel();
         viewModel.getPhoto().observe(this, this::photoObserve);
@@ -83,8 +81,8 @@ public class MainActivity extends AppCompatActivity {
     private void errorObserve(Throwable throwable) {
         throwable.toString();
     }
-    private void photoObserve(Photo photo) {
-        photo.getFaces();
+    private void photoObserve(Report photo) {
+        photo.getPhotos();
     }
 
     @Override

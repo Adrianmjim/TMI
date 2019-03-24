@@ -1,5 +1,6 @@
 package com.example.myapplication.model;
 
+import com.example.myapplication.model.entities.Report;
 import com.github.mhendred.face4j.DefaultFaceClient;
 import com.github.mhendred.face4j.FaceClient;
 import com.github.mhendred.face4j.exception.FaceClientException;
@@ -10,8 +11,13 @@ import java.io.File;
 import java.util.concurrent.Callable;
 
 import io.reactivex.Single;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Model {
@@ -23,16 +29,20 @@ public class Model {
     private RemoteDataSource remoteDataSource;
 
     public Model() {
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
         Retrofit retrofit = new Retrofit.Builder()
-                                    .baseUrl("http://api.skybiometry.com/")
+                                    .baseUrl("https://api.skybiometry.com/")
                                     .addConverterFactory(GsonConverterFactory.create())
-                                    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                                    .client(client)
                                     .build();
 
         remoteDataSource = retrofit.create(RemoteDataSource.class);
     }
 
-    public Single<Photo> detect (File imageFile) {
-        return remoteDataSource.getPhotoInfo(API_KEY, API_SEC, imageFile);
+    public Single<Report> detect (File imageFile) {
+        return remoteDataSource.getPhotoInfo(API_KEY, API_SEC, MultipartBody.Part.createFormData("urls", imageFile.toString()));
     }
 }
