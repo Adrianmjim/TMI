@@ -7,24 +7,24 @@ public class Center {
 
     @SerializedName("x")
     @Expose
-    private Double x;
+    private Float x;
     @SerializedName("y")
     @Expose
-    private Double y;
+    private Float y;
 
-    public Double getX() {
+    public Float getX() {
         return x;
     }
 
-    public void setX(Double x) {
+    public void setX(Float x) {
         this.x = x;
     }
 
-    public Double getY() {
+    public Float getY() {
         return y;
     }
 
-    public void setY(Double y) {
+    public void setY(Float y) {
         this.y = y;
     }
 }

@@ -13,11 +13,16 @@ import android.os.Bundle;
 
 import com.example.myapplication.R;
 import com.example.myapplication.model.entities.Report;
+import com.example.myapplication.model.entities.Tag;
 import com.example.myapplication.view.main.MainViewModel;
+import com.github.mhendred.face4j.model.Face;
 import com.github.mhendred.face4j.model.Photo;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.provider.MediaStore;
 import android.view.View;
@@ -32,10 +37,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private MainViewModel viewModel;
+    private RecyclerView rv;
+    private MyAdapter adapter;
+
+    private Bitmap bitmap;
+    private ImageView imageView;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -72,6 +83,16 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(Intent.createChooser(
                     intent, "Select Picture"), PICK_IMAGE);
         });
+        rv = findViewById(R.id.rvMainActivity);
+
+        rv.setHasFixedSize(true);
+
+        rv.setLayoutManager(new LinearLayoutManager(this));
+
+        rv.addItemDecoration(new DividerItemDecoration(rv.getContext(), DividerItemDecoration.VERTICAL));
+        // specify an adapter (see also next example)
+
+
         viewModel = new MainViewModel();
         viewModel.getPhoto().observe(this, this::photoObserve);
         viewModel.getError().observe(this, this::errorObserve);
@@ -82,7 +103,10 @@ public class MainActivity extends AppCompatActivity {
         throwable.toString();
     }
     private void photoObserve(Report photo) {
-        photo.getPhotos();
+        adapter = new MyAdapter(photo.getPhotos().get(0).getTags());
+        rv.setAdapter(adapter);
+        /*bitmap = drawFaceRectanglesOnBitmap(bitmap, photo.getPhotos().get(0).getTags());
+        imageView.setImageBitmap(bitmap);*/
     }
 
     @Override
@@ -92,9 +116,9 @@ public class MainActivity extends AppCompatActivity {
                 data != null && data.getData() != null) {
             Uri uri = data.getData();
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(
+                bitmap = MediaStore.Images.Media.getBitmap(
                         getContentResolver(), uri);
-                ImageView imageView = findViewById(R.id.imageView1);
+                imageView = findViewById(R.id.imageView1);
                 imageView.setImageBitmap(bitmap);
 
                 // Comment out for tutorial
@@ -128,8 +152,8 @@ public class MainActivity extends AppCompatActivity {
                 .create().show();
     }
 
-   /* private static Bitmap drawFaceRectanglesOnBitmap(
-            Bitmap originalBitmap, Face[] faces) {
+    private static Bitmap drawFaceRectanglesOnBitmap(
+            Bitmap originalBitmap, List<Tag> tags) {
         Bitmap bitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true);
         Canvas canvas = new Canvas(bitmap);
         Paint paint = new Paint();
@@ -137,17 +161,16 @@ public class MainActivity extends AppCompatActivity {
         paint.setStyle(Paint.Style.STROKE);
         paint.setColor(Color.RED);
         paint.setStrokeWidth(10);
-        if (faces != null) {
-            for (Face face : faces) {
-                FaceRectangle faceRectangle = face.faceRectangle;
+        if (tags != null) {
+            for (Tag tag : tags) {
                 canvas.drawRect(
-                        faceRectangle.left,
-                        faceRectangle.top,
-                        faceRectangle.left + faceRectangle.width,
-                        faceRectangle.top + faceRectangle.height,
+                        tag.getCenter().getX() - 3.0f,
+                        tag.getCenter().getY() - 3.0f,
+                        tag.getCenter().getX() + 3.0f,
+                        tag.getCenter().getY() + 3.0f,
                         paint);
             }
         }
         return bitmap;
-    }*/
+    }
 }
