@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ButterKnife.bind(this);
 
         viewModel = new MainViewModel();
+        viewModel.getError().observe(this, this::showError);
         viewModel.getLoad().observe(this, this::loadObserve);
         viewModel.getSequence().observe(this, reports -> {
             Fragment fragment = new SecondMainFragment(viewModel);
@@ -150,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == RESULT_OK) {
             Uri videoUri = intent.getData();
-            viewModel.processVideo(this, videoUri, 1000);
+            viewModel.processVideo(this, videoUri);
         }
     }
 
@@ -184,35 +185,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void showError(Throwable message) {
         new AlertDialog.Builder(this)
                 .setTitle("Error")
-                .setMessage(message.getMessage())
+                .setMessage(message.getLocalizedMessage())
                 .setPositiveButton("OK", (dialog, id) -> {
                     dialog.dismiss();
                 })
                 .create().show();
     }
-
-    private static Bitmap drawFaceRectanglesOnBitmap(
-            Bitmap originalBitmap, List<Tag> tags) {
-        Bitmap bitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true);
-        Canvas canvas = new Canvas(bitmap);
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(Color.RED);
-        paint.setStrokeWidth(10);
-        if (tags != null) {
-            for (Tag tag : tags) {
-                canvas.drawRect(
-                        tag.getCenter().getX() - 3.0f,
-                        tag.getCenter().getY() - 3.0f,
-                        tag.getCenter().getX() + 3.0f,
-                        tag.getCenter().getY() + 3.0f,
-                        paint);
-            }
-        }
-        return bitmap;
-    }
-
 
     private void dispatchTakeVideoIntent() {
         Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
@@ -225,6 +203,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         dispatchTakeVideoIntent();
     }
     @Override public void onFolder() {
-
+        Intent i = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+        //comma-separated MIME types
+        //mediaChooser.setType("*/*");
+        startActivityForResult(i, REQUEST_VIDEO_CAPTURE);
     }
 }

@@ -1,12 +1,18 @@
 package com.example.tmi.view.main;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -17,10 +23,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.signature.StringSignature;
+
 import com.example.tmi.R;
 import com.example.tmi.model.entities.Report;
+import com.example.tmi.model.entities.Tag;
 
 import java.util.List;
 
@@ -31,18 +37,17 @@ public class SecondMainFragment extends Fragment {
     @BindView(R.id.rvMainActivity) RecyclerView recyclerView;
 
     @OnClick(R.id.button1) void onClick1() {
-        showReport(list.get(--i));
+        viewModel.before();
     }
 
     @OnClick(R.id.button2) void onClick2() {
-        showReport(list.get(++i));
+        viewModel.next();
     }
     private MainViewModel viewModel;
     private OnFragmentInteractionListener mListener;
     private MyAdapter adapter;
 
-    private int i = 0;
-    private List<Report> list;
+    private Report report;
 
     public SecondMainFragment(MainViewModel viewModel) {
         // Required empty public constructor
@@ -75,19 +80,22 @@ public class SecondMainFragment extends Fragment {
     @Override public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
+        recyclerView.setHasFixedSize(true);
 
-        viewModel.getSequence().observe(this, this::sequenceObserver);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        //recyclerView.addItemDecoration(new DividerItemDecoration(rv.getContext(), DividerItemDecoration.VERTICAL));
+        viewModel.getSequence().observe(this, this::showReport);
+        viewModel.getSequence2().observe(this, ignore -> {});
     }
-    private void sequenceObserver(List<Report> reports) {
-        list = reports;
-        showReport(list.get(i));
-    }
+    /*private void showBitmap(Bitmap bitmap) {
+        Bitmap bitmap1 = drawFaceRectanglesOnBitmap(bitmap, report.getPhotos().get(0).getTags());
+        imageView.setImageBitmap(bitmap1);
+
+    }*/
     private void showReport(Report report) {
-        Glide.with(getActivity())
-                .load(report.getPhotos().get(0).getUrl())
-                .animate(R.anim.abc_fade_in)
-                .signature(new StringSignature(String.valueOf(System.currentTimeMillis())))
-                .into(imageView);
+        Bitmap bitmap1 = drawFaceRectanglesOnBitmap(viewModel.getSequence2().getValue(), report.getPhotos().get(0).getTags());
+        imageView.setImageBitmap(bitmap1);
         adapter = new MyAdapter(report.getPhotos().get(0).getTags());
         recyclerView.setAdapter(adapter);
     }
@@ -101,4 +109,27 @@ public class SecondMainFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+    private Bitmap drawFaceRectanglesOnBitmap(
+            Bitmap originalBitmap, List<Tag> tags) {
+        Bitmap bitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true);
+        Canvas canvas = new Canvas(bitmap);
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setColor(Color.BLUE);
+        paint.setStrokeWidth(8);
+        if (tags != null) {
+            for (Tag tag : tags) {
+                canvas.drawRect(
+                        tag.getCenter().getX() + 2.0f,
+                        tag.getCenter().getY() + 2.0f,
+                        tag.getCenter().getX() + 2.0f,
+                        tag.getCenter().getY() + 2.0f,
+                        paint);
+            }
+        }
+        return bitmap;
+    }
+
 }

@@ -15,6 +15,8 @@ import androidx.fragment.app.DialogFragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
 public class LoadDialogFragment extends DialogFragment {
 
     @BindView(R.id.loadImage) ImageView imageView;
@@ -30,9 +32,18 @@ public class LoadDialogFragment extends DialogFragment {
         Glide.with(getActivity())
                 .load(R.drawable.load_icon)
                 .placeholder(R.drawable.load_icon)
-                .centerCrop()
-                .crossFade()
                 .into(imageView);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (getDialog() != null) {
+            if(getDialog().getWindow() != null) {
+                getDialog().getWindow().setLayout(WRAP_CONTENT, WRAP_CONTENT);
+            }
+            getDialog().setCanceledOnTouchOutside(false);
+        }
     }
 
 }

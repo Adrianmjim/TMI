@@ -11,6 +11,13 @@ public class Mood {
     @Expose
     private Integer confidence;
 
+    public Mood() {
+
+    }
+    public Mood(String value, Integer confidence) {
+        this.value = value;
+        this.confidence = confidence;
+    }
     public String getValue() {
         return value;
     }

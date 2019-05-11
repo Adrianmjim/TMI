@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 
+import com.example.tmi.model.entities.Mood;
 import com.example.tmi.model.entities.Report;
 import com.example.tmi.view.BaseViewModel;
 
@@ -22,30 +23,96 @@ import io.reactivex.schedulers.Schedulers;
 
 public class MainViewModel extends BaseViewModel {
 
-    private MutableLiveData<Report> photoLiveData = new MutableLiveData<>();
     private MutableLiveData<Boolean> load = new MutableLiveData<>();
     private MutableLiveData<List<Report>> sequence = new MutableLiveData<>();
+    private MutableLiveData<List<Bitmap>> sequence2 = new MutableLiveData<>();
+    private MutableLiveData<List<Mood>> higherMoods = new MutableLiveData<>();
+    private MutableLiveData<List<Mood>> coincidencies = new MutableLiveData<>();
+    private MutableLiveData<Report> report = new MutableLiveData<>();
+    private MutableLiveData<Bitmap> bitmap = new MutableLiveData<>();
+    private MutableLiveData<Mood> higherMood = new MutableLiveData<>();
+    private MutableLiveData<Mood> coincidency = new MutableLiveData<>();
 
-    public LiveData<Report> getPhoto() {
-        return photoLiveData;
-    }
     public LiveData<Boolean> getLoad() {
         return load;
     }
-    public LiveData<List<Report>> getSequence() {
-        return sequence;
+    public LiveData<Report> getSequence() {
+        return report;
     }
+    public LiveData<Bitmap> getSequence2() {
+        return bitmap;
+    }
+    public LiveData<Mood> getHigherMood() {return higherMood;}
+    public LiveData<Mood> getCoincidency() {return coincidency;}
+
+    private int i = 0;
+
+    private int maxElements = 0;
+
+    private int step;
 
     public MainViewModel() {
         super();
     }
 
-    void processVideo(Context context, Uri uri, int step) {
-        disposables.add(model.computeVideo(context, uri, step)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+    void processVideo(Context context, Uri uri) {
+        disposables.add(model.extractFrames(context, uri, step * 1000)
                 .doOnSubscribe(o -> load.postValue(true))
+                .subscribeOn(Schedulers.io())
+                .doOnSuccess(this::initSequence2)
+                .flatMap(bitmaps -> model.computeVideo(bitmaps, context))
+                .doOnSuccess(this::initSequence)
+                .flatMap(reports ->
+                         model.getHigherMoods(reports)
+                            .doOnSuccess(this::initHigherMoods)
+                            .ignoreElement().andThen(model.getCoincidencies(reports)))
                 .doOnEvent((s,t)-> load.postValue(false))
-                .subscribe(reports -> sequence.postValue(reports), throwable -> error.postValue(throwable)));
+                .subscribe(this::initCoincidencies, error::postValue));
+    }
+    private void initSequence(List<Report> reports) {
+        sequence.postValue(reports);
+        report.postValue(reports.get(0));
+        maxElements = reports.size();
+    }
+    private void initSequence2(List<Bitmap> bitmaps) {
+        sequence2.postValue(bitmaps);
+        bitmap.postValue(bitmaps.get(0));
+    }
+    private void initHigherMoods(List<Mood> moods) {
+        higherMoods.postValue(moods);
+        higherMood.postValue(moods.get(0));
+    }
+    private void initCoincidencies(List<Mood> moods) {
+        coincidencies.postValue(moods);
+        coincidency.postValue(moods.get(0));
+    }
+    private void prepareContext(List<Mood> moodList) {
+        coincidencies.postValue(moodList);
+        maxElements = moodList.size();
+    }
+    public void next() {
+        if (i < maxElements-1) {
+            i++;
+            showReport();
+        }
+    }
+    public void before() {
+        if (i > 0) {
+            i--;
+            showReport();
+        }
+    }
+    private void showReport() {
+        bitmap.postValue(sequence2.getValue().get(i));
+        report.postValue(sequence.getValue().get(i));
+        //higherMood.postValue(higherMoods.getValue().get(i));
+        //coincidency.postValue(coincidencies.getValue().get(i));
+    }
+
+    public int getStep() {
+        return step;
+    }
+    public void setStep(int step) {
+        this.step = step;
     }
 }

@@ -7,12 +7,14 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.example.tmi.R;
 import com.example.tmi.view.main.MainViewModel;
@@ -24,11 +26,15 @@ public class FirstMainFragment extends Fragment {
 
     private MainViewModel activityViewModel;
 
+    @BindView(R.id.editText) EditText editText;
+
     @OnClick(R.id.ibCamera) void onClickCamera() {
+        activityViewModel.setStep(Integer.valueOf(editText.getText().toString()));
         mListener.onVideo();
     }
 
     @OnClick(R.id.ibFolder) void onClickFolder() {
+        activityViewModel.setStep(Integer.valueOf(editText.getText().toString()));
         mListener.onFolder();
     }
 
