@@ -1,4 +1,4 @@
-package com.example.tmi.view.main;
+package com.example.tmi.view.main.fragment;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -23,13 +23,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 
 import com.example.tmi.R;
 import com.example.tmi.model.entities.Mood;
 import com.example.tmi.model.entities.Report;
 import com.example.tmi.model.entities.Tag;
+import com.example.tmi.view.main.MainViewModel;
+import com.example.tmi.view.main.MyAdapter;
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -42,16 +49,17 @@ public class SecondMainFragment extends Fragment {
 
     @BindView(R.id.imageView1) ImageView imageView;
     @BindView(R.id.rvMainActivity) RecyclerView recyclerView;
-    @BindView(R.id.chart) LineChart lineChart;
-    @BindView(R.id.chart2) LineChart lineChart2;
+    @BindView(R.id.chart) BarChart lineChart;
+    @BindView(R.id.chart2) BarChart lineChart2;
+    @BindView(R.id.tvFrame) TextView tvFrame;
 
-    @BindColor(R.color.neutral) Integer neutral;
-    @BindColor(R.color.anger) Integer anger;
-    @BindColor(R.color.disgust) Integer disgust;
-    @BindColor(R.color.fear) Integer fear;
-    @BindColor(R.color.happiness) Integer happiness;
-    @BindColor(R.color.sadness) Integer sadness;
-    @BindColor(R.color.surprise) Integer surprise;
+    @BindColor(R.color.neutral) int neutral;
+    @BindColor(R.color.anger) int anger;
+    @BindColor(R.color.disgust) int disgust;
+    @BindColor(R.color.fear) int fear;
+    @BindColor(R.color.happiness) int happiness;
+    @BindColor(R.color.sadness) int sadness;
+    @BindColor(R.color.surprise) int surprise;
 
     @OnClick(R.id.button1) void onClick1() {
         viewModel.before();
@@ -63,8 +71,6 @@ public class SecondMainFragment extends Fragment {
     private MainViewModel viewModel;
     private OnFragmentInteractionListener mListener;
     private MyAdapter adapter;
-
-    private Report report;
 
     public SecondMainFragment(MainViewModel viewModel) {
         // Required empty public constructor
@@ -106,16 +112,23 @@ public class SecondMainFragment extends Fragment {
         viewModel.getSequence2().observe(this, ignore -> {});
         viewModel.getHigherMoods().observe(this, this::showHigherMoods);
         viewModel.getCoincidencys().observe(this, this::showCoincidencies);
+        viewModel.getFrame().observe(this, this::showFrame);
     }
+
+    private void showFrame(Integer integer) {
+        tvFrame.setText("Este es el frame " + integer+1 + " que esta en el segundo "+ integer * viewModel.getStep() + " del video");
+    }
+
     private void showCoincidencies(List<Mood> moods) {
-        List<Entry> entries = new ArrayList<>();
+        List<BarEntry> entries = new ArrayList<>();
         List<Integer> colors = new ArrayList<>();
         for (int i = 0; i < moods.size(); i++) {
-            entries.add(new Entry(i, moods.get(i).getConfidence()));
+            entries.add(new BarEntry(i, moods.get(i).getConfidence()));
             colors.add(getColor(moods.get(i).getValue()));
         }
-        LineDataSet data = new LineDataSet(entries, "Prueba");
-        LineData lineData = new LineData(data);
+        BarDataSet data = new BarDataSet(entries, "Prueba");
+
+        BarData lineData = new BarData(data);
         lineChart.setData(lineData);
         lineChart.invalidate(); // refresh
     }
@@ -139,7 +152,17 @@ public class SecondMainFragment extends Fragment {
         return 0;
     }
     private void showHigherMoods(List<Mood> moods) {
+        List<BarEntry> entries = new ArrayList<>();
+        List<Integer> colors = new ArrayList<>();
+        for (int i = 0; i < moods.size(); i++) {
+            entries.add(new BarEntry(i, moods.get(i).getConfidence()));
+            colors.add(getColor(moods.get(i).getValue()));
+        }
+        BarDataSet data = new BarDataSet(entries, "Prueba");
 
+        BarData lineData = new BarData(data);
+        lineChart2.setData(lineData);
+        lineChart2.invalidate(); // refresh
     }
     /*private void showBitmap(Bitmap bitmap) {
         Bitmap bitmap1 = drawFaceRectanglesOnBitmap(bitmap, report.getPhotos().get(0).getTags());
@@ -175,10 +198,10 @@ public class SecondMainFragment extends Fragment {
         if (tags != null) {
             for (Tag tag : tags) {
                 canvas.drawRect(
-                        tag.getCenter().getX() + 2.0f,
-                        tag.getCenter().getY() + 2.0f,
-                        tag.getCenter().getX() + 2.0f,
-                        tag.getCenter().getY() + 2.0f,
+                        tag.getCenter().getX() - (tag.getWidth() / 2) ,
+                        tag.getCenter().getY() + (tag.getHeight() / 2),
+                        tag.getCenter().getX() + (tag.getWidth() / 2),
+                        tag.getCenter().getY() - (tag.getHeight() / 2),
                         paint);
             }
         }

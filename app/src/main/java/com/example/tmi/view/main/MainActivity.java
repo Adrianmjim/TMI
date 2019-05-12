@@ -1,35 +1,22 @@
 package com.example.tmi.view.main;
 
-import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.signature.StringSignature;
 import com.example.tmi.R;
 import com.example.tmi.model.entities.Report;
-import com.example.tmi.model.entities.Tag;
-import com.example.tmi.view.FirstMainFragment;
-import com.example.tmi.view.main.LoadDialogFragment;
-import com.example.tmi.view.main.MainViewModel;
-import com.example.tmi.view.main.MyAdapter;
+import com.example.tmi.view.LoadDialogFragment;
+import com.example.tmi.view.main.fragment.FirstMainFragment;
+import com.example.tmi.view.main.fragment.SecondMainFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import android.provider.MediaStore;
-import android.view.View;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.GravityCompat;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 
 import android.view.MenuItem;
 
@@ -41,7 +28,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import butterknife.BindView;
+
 import butterknife.ButterKnife;
 
 import android.view.Menu;

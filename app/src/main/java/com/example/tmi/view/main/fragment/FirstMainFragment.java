@@ -1,4 +1,4 @@
-package com.example.tmi.view;
+package com.example.tmi.view.main.fragment;
 
 import android.content.Context;
 import android.net.Uri;

@@ -1,4 +1,4 @@
-package com.example.tmi.view.main;
+package com.example.tmi.view;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

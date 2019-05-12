@@ -65,4 +65,9 @@ dependencies {
 
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0-alpha'
 
+    implementation 'com.google.firebase:firebase-auth:17.0.0'
+
+
+
 }
+

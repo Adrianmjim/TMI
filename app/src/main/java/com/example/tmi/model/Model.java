@@ -109,7 +109,7 @@ public class Model {
             return new Mood(key, value);
         }
 
-        return new Mood("", -1);
+        return new Mood("", 0);
 
     }
 
@@ -133,7 +133,7 @@ public class Model {
             return tags.get(pos).getAttributes().getMood();
         }
 
-        return new Mood("", -1);
+        return new Mood("", 0);
 
     }
 

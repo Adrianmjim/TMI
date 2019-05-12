@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.example.tmi.R;
+import com.example.tmi.view.main.MainActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -38,6 +39,7 @@ public class WelcomeActivity extends AppCompatActivity {
     private GoogleSignInOptions gso;
     private GoogleSignInClient mGoogleSignInClient;
 
+
     @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.welcome_activity);
@@ -62,6 +64,8 @@ public class WelcomeActivity extends AppCompatActivity {
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 account.getAccount();
+                Intent i = new Intent(this, MainActivity.class);
+                startActivity(i);
             } catch(ApiException e) {
                 e.printStackTrace();
             }

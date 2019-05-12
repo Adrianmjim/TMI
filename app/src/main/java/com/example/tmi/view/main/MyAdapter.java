@@ -7,11 +7,15 @@ import android.widget.TextView;
 
 import com.example.tmi.R;
 import com.example.tmi.model.entities.Tag;
+import com.example.tmi.view.TranslationUtils;
 
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
@@ -20,24 +24,26 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     public MyAdapter(List<Tag> face) {
         this.face = face;
     }
-    public static class MyViewHolder extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
-        public TextView textView;
-        public TextView textView2;
-        public MyViewHolder(View v) {
+    class MyViewHolder extends RecyclerView.ViewHolder {
+
+        @BindView(R.id.tv) TextView textView;
+        @BindView(R.id.tv2) TextView textView2;
+        @BindView(R.id.tv3) TextView textView3;
+
+        MyViewHolder(View v) {
             super(v);
-            textView = v.findViewById(R.id.tv);
-            textView2 = v.findViewById(R.id.tv2);
+            ButterKnife.bind(this, v);
         }
     }
     @NonNull @Override public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = (View) LayoutInflater.from(parent.getContext())
+        View v = LayoutInflater.from(parent.getContext())
                                         .inflate(R.layout.my_view_holder, parent, false);
         return new MyViewHolder(v);
     }
     @Override public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.textView.setText("Cara "+String.valueOf(position+1));
-        holder.textView2.setText(face.get(position).getAttributes().getMood().getValue());
+        holder.textView2.setText(TranslationUtils.translate(face.get(position).getAttributes().getMood().getValue()));
+        holder.textView3.setText("Coincidencia: "+face.get(position).getAttributes().getMood().getConfidence()+"%");
     }
     @Override public int getItemCount() {
         return face.size();

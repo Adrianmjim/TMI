@@ -30,6 +30,7 @@ public class MainViewModel extends BaseViewModel {
     private MutableLiveData<List<Mood>> coincidencies = new MutableLiveData<>();
     private MutableLiveData<Report> report = new MutableLiveData<>();
     private MutableLiveData<Bitmap> bitmap = new MutableLiveData<>();
+    private MutableLiveData<Integer> frame = new MutableLiveData<>();
 
     public LiveData<Boolean> getLoad() {
         return load;
@@ -42,6 +43,7 @@ public class MainViewModel extends BaseViewModel {
     }
     public LiveData<List<Mood>> getHigherMoods() {return higherMoods;}
     public LiveData<List<Mood>> getCoincidencys() {return coincidencies;}
+    public LiveData<Integer> getFrame() {return frame;}
 
     private int i = 0;
 
@@ -62,7 +64,7 @@ public class MainViewModel extends BaseViewModel {
                 .doOnSuccess(this::initSequence)
                 .flatMap(reports ->
                          model.getHigherMoods(reports)
-                            .doOnSuccess(coincidencies::postValue)
+                            .doOnSuccess(higherMoods::postValue)
                             .ignoreElement().andThen(model.getCoincidencies(reports)))
                 .doOnEvent((s,t)-> load.postValue(false))
                 .subscribe(coincidencies::postValue, error::postValue));
@@ -103,6 +105,7 @@ public class MainViewModel extends BaseViewModel {
     private void showReport() {
         bitmap.postValue(sequence2.getValue().get(i));
         report.postValue(sequence.getValue().get(i));
+        frame.postValue(i);
     }
 
     public int getStep() {

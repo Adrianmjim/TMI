@@ -20,10 +20,10 @@ public class Tag {
     private Boolean manual;
     @SerializedName("width")
     @Expose
-    private Double width;
+    private Float width;
     @SerializedName("height")
     @Expose
-    private Double height;
+    private Float height;
     @SerializedName("yaw")
     @Expose
     private Integer yaw;
@@ -96,19 +96,19 @@ public class Tag {
         this.manual = manual;
     }
 
-    public Double getWidth() {
+    public Float getWidth() {
         return width;
     }
 
-    public void setWidth(Double width) {
+    public void setWidth(Float width) {
         this.width = width;
     }
 
-    public Double getHeight() {
+    public Float getHeight() {
         return height;
     }
 
-    public void setHeight(Double height) {
+    public void setHeight(Float height) {
         this.height = height;
     }
 
