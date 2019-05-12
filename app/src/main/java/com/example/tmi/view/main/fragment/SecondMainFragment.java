@@ -30,6 +30,7 @@ import com.example.tmi.R;
 import com.example.tmi.model.entities.Mood;
 import com.example.tmi.model.entities.Report;
 import com.example.tmi.model.entities.Tag;
+import com.example.tmi.view.TranslationUtils;
 import com.example.tmi.view.main.MainViewModel;
 import com.example.tmi.view.main.MyAdapter;
 import com.github.mikephil.charting.charts.BarChart;
@@ -40,9 +41,14 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 
 public class SecondMainFragment extends Fragment {
@@ -52,6 +58,7 @@ public class SecondMainFragment extends Fragment {
     @BindView(R.id.chart) BarChart lineChart;
     @BindView(R.id.chart2) BarChart lineChart2;
     @BindView(R.id.tvFrame) TextView tvFrame;
+    @BindView(R.id.tvFace) TextView tvFace;
 
     @BindColor(R.color.neutral) int neutral;
     @BindColor(R.color.anger) int anger;
@@ -116,53 +123,79 @@ public class SecondMainFragment extends Fragment {
     }
 
     private void showFrame(Integer integer) {
-        tvFrame.setText("Este es el frame " + integer+1 + " que esta en el segundo "+ integer * viewModel.getStep() + " del video");
+        tvFrame.setText("Este es el frame " + (integer+1) + " que esta en el segundo "+ integer * viewModel.getStep() + " del video");
     }
 
     private void showCoincidencies(List<Mood> moods) {
-        List<BarEntry> entries = new ArrayList<>();
-        List<Integer> colors = new ArrayList<>();
+        List<IBarDataSet> dataSets = new ArrayList<>();
+        Map<String, List<BarEntry>> map = new HashMap<>();
         for (int i = 0; i < moods.size(); i++) {
-            entries.add(new BarEntry(i, moods.get(i).getConfidence()));
-            colors.add(getColor(moods.get(i).getValue()));
-        }
-        BarDataSet data = new BarDataSet(entries, "Prueba");
+            List<BarEntry> dataSet;
 
-        BarData lineData = new BarData(data);
+            if (map.containsKey(moods.get(i).getValue())) {
+                dataSet = map.get(moods.get(i).getValue());
+            } else {
+                dataSet = new ArrayList<>();
+            }
+            dataSet.add(new BarEntry(i+1, moods.get(i).getConfidence()));
+            map.put(moods.get(i).getValue(), dataSet);
+        }
+        Iterator it = map.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            BarDataSet barDataSet = new BarDataSet((List<BarEntry>)pair.getValue(), TranslationUtils.translate((String) pair.getKey()));
+            barDataSet.setColor(getColor((String) pair.getKey()));
+            dataSets.add(barDataSet);
+            it.remove();
+        }
+        BarData lineData = new BarData(dataSets);
         lineChart.setData(lineData);
         lineChart.invalidate(); // refresh
     }
     private Integer getColor(String name) {
         switch(name) {
-            case "neutral_mood":
+            case "neutral":
                 return neutral;
-            case "anger":
+            case "angry":
                 return anger;
-            case "disgust":
+            case "disgusted":
                 return disgust;
-            case "fear":
+            case "scared":
                 return fear;
-            case "happiness":
+            case "happy":
                 return happiness;
-            case "sadness":
+            case "sad":
                 return sadness;
-            case "surprise":
+            case "surprised":
                 return surprise;
         }
         return 0;
     }
     private void showHigherMoods(List<Mood> moods) {
-        List<BarEntry> entries = new ArrayList<>();
-        List<Integer> colors = new ArrayList<>();
+        List<IBarDataSet> dataSets = new ArrayList<>();
+        Map<String, List<BarEntry>> map = new HashMap<>();
         for (int i = 0; i < moods.size(); i++) {
-            entries.add(new BarEntry(i, moods.get(i).getConfidence()));
-            colors.add(getColor(moods.get(i).getValue()));
-        }
-        BarDataSet data = new BarDataSet(entries, "Prueba");
+            List<BarEntry> dataSet;
 
-        BarData lineData = new BarData(data);
+            if (map.containsKey(moods.get(i).getValue())) {
+                dataSet = map.get(moods.get(i).getValue());
+            } else {
+                dataSet = new ArrayList<>();
+            }
+            dataSet.add(new BarEntry(i+1, moods.get(i).getConfidence()));
+            map.put(moods.get(i).getValue(), dataSet);
+        }
+        Iterator it = map.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            BarDataSet barDataSet = new BarDataSet((List<BarEntry>)pair.getValue(), TranslationUtils.translate((String) pair.getKey()));
+            barDataSet.setColor(getColor((String) pair.getKey()));
+            dataSets.add(barDataSet);
+            it.remove();
+        }
+        BarData lineData = new BarData(dataSets);
         lineChart2.setData(lineData);
-        lineChart2.invalidate(); // refresh
+        lineChart2.invalidate();// refresh
     }
     /*private void showBitmap(Bitmap bitmap) {
         Bitmap bitmap1 = drawFaceRectanglesOnBitmap(bitmap, report.getPhotos().get(0).getTags());
@@ -174,6 +207,7 @@ public class SecondMainFragment extends Fragment {
         imageView.setImageBitmap(bitmap1);
         adapter = new MyAdapter(report.getPhotos().get(0).getTags());
         recyclerView.setAdapter(adapter);
+        tvFace.setText("Se han detectado " + report.getPhotos().get(0).getTags().size() + " caras en este frame");
     }
     @Override
     public void onDetach() {
@@ -192,7 +226,7 @@ public class SecondMainFragment extends Fragment {
         Canvas canvas = new Canvas(bitmap);
         Paint paint = new Paint();
         paint.setAntiAlias(true);
-        paint.setStyle(Paint.Style.STROKE);
+        paint.setStyle(Paint.Style.FILL);
         paint.setColor(Color.BLUE);
         paint.setStrokeWidth(8);
         if (tags != null) {

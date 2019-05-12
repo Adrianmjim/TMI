@@ -163,7 +163,7 @@ public class Model {
     }
     private Observable<Report> getPhotoInfo(File imageFile) {
         RequestBody fileBody = RequestBody.create(MediaType.parse("image/jpeg"), imageFile);
-        return remoteDataSource.getPhotoInfo(API_KEY2, API_SEC2, fileBody);
+        return remoteDataSource.getPhotoInfo(API_KEY, API_SEC, fileBody);
     }
 
 

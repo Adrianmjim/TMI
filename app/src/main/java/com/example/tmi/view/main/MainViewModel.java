@@ -56,6 +56,7 @@ public class MainViewModel extends BaseViewModel {
     }
 
     void processVideo(Context context, Uri uri) {
+        i = 0;
         disposables.add(model.extractFrames(context, uri, step * 1000)
                 .doOnSubscribe(o -> load.postValue(true))
                 .subscribeOn(Schedulers.io())
@@ -72,23 +73,12 @@ public class MainViewModel extends BaseViewModel {
     private void initSequence(List<Report> reports) {
         sequence.postValue(reports);
         report.postValue(reports.get(0));
+        frame.postValue(i);
         maxElements = reports.size();
     }
     private void initSequence2(List<Bitmap> bitmaps) {
         sequence2.postValue(bitmaps);
         bitmap.postValue(bitmaps.get(0));
-    }
-    private void initHigherMoods(List<Mood> moods) {
-        higherMoods.postValue(moods);
-        //higherMood.postValue(moods.get(0));
-    }
-    private void initCoincidencies(List<Mood> moods) {
-        coincidencies.postValue(moods);
-        //coincidency.postValue(moods.get(0));
-    }
-    private void prepareContext(List<Mood> moodList) {
-        coincidencies.postValue(moodList);
-        maxElements = moodList.size();
     }
     public void next() {
         if (i < maxElements-1) {

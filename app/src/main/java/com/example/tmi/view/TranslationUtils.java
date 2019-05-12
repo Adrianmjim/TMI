@@ -4,20 +4,20 @@ public class TranslationUtils {
 
     public static String translate(String name) {
         switch(name) {
-            case "neutral_mood":
+            case "neutral":
                 return "Neutral";
-            case "anger":
-                return "Enfado";
+            case "angry":
+                return "Enfadado";
             case "disgusted":
-                return "Disgusto";
-            case "fear":
-                return "Miedo";
-            case "happiness":
-                return "Felicidad";
-            case "sadness":
-                return "Tristeza";
-            case "surprise":
-                return "Sorpresa";
+                return "Disgustado";
+            case "scared":
+                return "Asustado";
+            case "happy":
+                return "Feliz";
+            case "sad":
+                return "Triste";
+            case "surprised":
+                return "Sorprendido";
         }
         return "";
     }
