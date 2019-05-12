@@ -11,6 +11,14 @@
         android:id="@+id/imageView1"
         android:contentDescription="Image with faces to analyze"/>
 
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/chart"
+        android:layout_width="match_parent"
+        android:layout_height="60dp" />
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/chart2"
+        android:layout_width="match_parent"
+        android:layout_height="60dp" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

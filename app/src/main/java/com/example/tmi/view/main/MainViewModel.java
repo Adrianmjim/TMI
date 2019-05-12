@@ -30,8 +30,6 @@ public class MainViewModel extends BaseViewModel {
     private MutableLiveData<List<Mood>> coincidencies = new MutableLiveData<>();
     private MutableLiveData<Report> report = new MutableLiveData<>();
     private MutableLiveData<Bitmap> bitmap = new MutableLiveData<>();
-    private MutableLiveData<Mood> higherMood = new MutableLiveData<>();
-    private MutableLiveData<Mood> coincidency = new MutableLiveData<>();
 
     public LiveData<Boolean> getLoad() {
         return load;
@@ -42,8 +40,8 @@ public class MainViewModel extends BaseViewModel {
     public LiveData<Bitmap> getSequence2() {
         return bitmap;
     }
-    public LiveData<Mood> getHigherMood() {return higherMood;}
-    public LiveData<Mood> getCoincidency() {return coincidency;}
+    public LiveData<List<Mood>> getHigherMoods() {return higherMoods;}
+    public LiveData<List<Mood>> getCoincidencys() {return coincidencies;}
 
     private int i = 0;
 
@@ -64,10 +62,10 @@ public class MainViewModel extends BaseViewModel {
                 .doOnSuccess(this::initSequence)
                 .flatMap(reports ->
                          model.getHigherMoods(reports)
-                            .doOnSuccess(this::initHigherMoods)
+                            .doOnSuccess(coincidencies::postValue)
                             .ignoreElement().andThen(model.getCoincidencies(reports)))
                 .doOnEvent((s,t)-> load.postValue(false))
-                .subscribe(this::initCoincidencies, error::postValue));
+                .subscribe(coincidencies::postValue, error::postValue));
     }
     private void initSequence(List<Report> reports) {
         sequence.postValue(reports);
@@ -80,11 +78,11 @@ public class MainViewModel extends BaseViewModel {
     }
     private void initHigherMoods(List<Mood> moods) {
         higherMoods.postValue(moods);
-        higherMood.postValue(moods.get(0));
+        //higherMood.postValue(moods.get(0));
     }
     private void initCoincidencies(List<Mood> moods) {
         coincidencies.postValue(moods);
-        coincidency.postValue(moods.get(0));
+        //coincidency.postValue(moods.get(0));
     }
     private void prepareContext(List<Mood> moodList) {
         coincidencies.postValue(moodList);
@@ -105,8 +103,6 @@ public class MainViewModel extends BaseViewModel {
     private void showReport() {
         bitmap.postValue(sequence2.getValue().get(i));
         report.postValue(sequence.getValue().get(i));
-        //higherMood.postValue(higherMoods.getValue().get(i));
-        //coincidency.postValue(coincidencies.getValue().get(i));
     }
 
     public int getStep() {

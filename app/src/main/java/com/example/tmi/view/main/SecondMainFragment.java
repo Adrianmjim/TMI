@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import butterknife.BindColor;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -25,9 +26,15 @@ import android.widget.ImageView;
 
 
 import com.example.tmi.R;
+import com.example.tmi.model.entities.Mood;
 import com.example.tmi.model.entities.Report;
 import com.example.tmi.model.entities.Tag;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -35,6 +42,16 @@ public class SecondMainFragment extends Fragment {
 
     @BindView(R.id.imageView1) ImageView imageView;
     @BindView(R.id.rvMainActivity) RecyclerView recyclerView;
+    @BindView(R.id.chart) LineChart lineChart;
+    @BindView(R.id.chart2) LineChart lineChart2;
+
+    @BindColor(R.color.neutral) Integer neutral;
+    @BindColor(R.color.anger) Integer anger;
+    @BindColor(R.color.disgust) Integer disgust;
+    @BindColor(R.color.fear) Integer fear;
+    @BindColor(R.color.happiness) Integer happiness;
+    @BindColor(R.color.sadness) Integer sadness;
+    @BindColor(R.color.surprise) Integer surprise;
 
     @OnClick(R.id.button1) void onClick1() {
         viewModel.before();
@@ -87,6 +104,42 @@ public class SecondMainFragment extends Fragment {
         //recyclerView.addItemDecoration(new DividerItemDecoration(rv.getContext(), DividerItemDecoration.VERTICAL));
         viewModel.getSequence().observe(this, this::showReport);
         viewModel.getSequence2().observe(this, ignore -> {});
+        viewModel.getHigherMoods().observe(this, this::showHigherMoods);
+        viewModel.getCoincidencys().observe(this, this::showCoincidencies);
+    }
+    private void showCoincidencies(List<Mood> moods) {
+        List<Entry> entries = new ArrayList<>();
+        List<Integer> colors = new ArrayList<>();
+        for (int i = 0; i < moods.size(); i++) {
+            entries.add(new Entry(i, moods.get(i).getConfidence()));
+            colors.add(getColor(moods.get(i).getValue()));
+        }
+        LineDataSet data = new LineDataSet(entries, "Prueba");
+        LineData lineData = new LineData(data);
+        lineChart.setData(lineData);
+        lineChart.invalidate(); // refresh
+    }
+    private Integer getColor(String name) {
+        switch(name) {
+            case "neutral_mood":
+                return neutral;
+            case "anger":
+                return anger;
+            case "disgust":
+                return disgust;
+            case "fear":
+                return fear;
+            case "happiness":
+                return happiness;
+            case "sadness":
+                return sadness;
+            case "surprise":
+                return surprise;
+        }
+        return 0;
+    }
+    private void showHigherMoods(List<Mood> moods) {
+
     }
     /*private void showBitmap(Bitmap bitmap) {
         Bitmap bitmap1 = drawFaceRectanglesOnBitmap(bitmap, report.getPhotos().get(0).getTags());
